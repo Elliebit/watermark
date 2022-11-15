@@ -1,0 +1,38 @@
+$count=0;
+echo "<h6>STARTED</h6>";
+foreach(glob('pics/{*.jpg,*.jpeg,*.png}', GLOB_BRACE) as $image)
+{
+$count++;
+echo '<p>'.$image;
+list($width, $height) = getimagesize($image);
+$ext = substr(strrchr($image, '.'), 1);
+
+$cropW   = $width;
+$cropH   = $height-40;
+if($ext =='jpeg'||$ext =='jpg')
+$origimg = imagecreatefromjpeg($image);
+else if ($ext=='png')
+$origimg = imagecreatefrompng($image);
+ 
+$cropimg = imagecreatetruecolor($cropW,$cropH);
+
+// Actual Crop Code
+imagecopyresized($cropimg, $origimg, 0, 0, 0, 0, $width, $height, $width, $height);
+
+//Save Cropped Image
+if($ext =='jpeg'||$ext =='jpg')
+{
+$savefile='crop/'.basename($image);
+imagejpeg($cropimg,$savefile);
+}
+else if ($ext=='png') 
+{
+$savefile='crop/'.basename($image);
+imagepng($cropimg,$savefile);
+}
+echo '-->'.$savefile.'</p>';
+imagedestroy($cropimg);
+imagedestroy($origimg);
+  } 
+echo '<h6>DONE WITH '.$count.' IMAGES</h6>';
+  ?>
